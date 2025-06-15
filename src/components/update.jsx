@@ -1,10 +1,8 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-import '../App.css'
-
+import '../App.css';
 
 const UpdateSchema = Yup.object().shape({
   firstName: Yup.string().required('Required'),
@@ -13,13 +11,18 @@ const UpdateSchema = Yup.object().shape({
   phone: Yup.string().required('Required')
 });
 
-
 function Update() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user'));
+
+  // Lazy initialization of user data from localStorage
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
 
   const handleSubmit = (values) => {
-    localStorage.setItem('user', JSON.stringify(values));
+    setUser(values); // update local state
+    localStorage.setItem('user', JSON.stringify(values)); // persist changes
     navigate('/info');
   };
 
@@ -35,7 +38,7 @@ function Update() {
       >
         <Form>
           <label>First Name</label>
-          <Field name="firstName" />2
+          <Field name="firstName" />
           <ErrorMessage name="firstName" component="div" className="error" />
 
           <label>Last Name</label>

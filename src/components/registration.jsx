@@ -1,29 +1,44 @@
-import React from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
-import '../App.css'
+import React, { useState } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
+import "../App.css";
 
 const RegistrationSchema = Yup.object().shape({
-  firstName: Yup.string().required('Required'),
-  lastName: Yup.string().required('Required'),
-  email: Yup.string().email('Invalid email').required('Required'),
-  phone: Yup.string().required('Required')
+  firstName: Yup.string().required("Required"),
+  lastName: Yup.string().required("Required"),
+  email: Yup.string().email("Invalid email").required("Required"),
+  phone: Yup.string().required("Required"),
 });
 
 function Registration() {
   const navigate = useNavigate();
 
+  // Lazy initialization of user state from localStorage
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("user");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  {
+    user && (
+      <div className="preview">
+        <p>Welcome back, {user.firstName}!</p>
+      </div>
+    );
+  }
+
   const handleSubmit = (values) => {
-    localStorage.setItem('user', JSON.stringify(values));
-    navigate('/info');
+    setUser(values); // update state
+    localStorage.setItem("user", JSON.stringify(values)); // sync to localStorage
+    navigate("/info");
   };
 
   return (
     <div className="form-container">
       <h2>Register</h2>
       <Formik
-        initialValues={{ firstName: '', lastName: '', email: '', phone: '' }}
+        initialValues={{ firstName: "", lastName: "", email: "", phone: "" }}
         validationSchema={RegistrationSchema}
         onSubmit={handleSubmit}
       >
